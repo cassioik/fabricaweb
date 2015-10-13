@@ -2,7 +2,10 @@ package br.com.fabricadeprogramador.persistencia.jdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.fabricadeprogramador.persistencia.entidade.Usuario;
 
@@ -39,7 +42,7 @@ public class UsuarioDAO {
 	}
 
 	public void excluir(Usuario usu) {
-String sql = "DELETE FROM usuario WHERE id=?";
+		String sql = "DELETE FROM usuario WHERE id=?";
 		
 		try (PreparedStatement preparador = con.prepareStatement(sql)){
 			preparador.setInt(1, usu.getId());
@@ -48,6 +51,71 @@ String sql = "DELETE FROM usuario WHERE id=?";
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void salvar(Usuario usuario){
+		if(usuario.getId()!=null){
+			alterar(usuario);
+		}else{
+			cadastrar(usuario);
+		}
+	}
+	
+	/**
+	 * Busca de um registro no banco de dados pelo ID do usuário
+	 * @param id É um inteiro que representa o número do ID do usuário a ser buscado
+	 * @return Um objeto usuário ou Null quando não há registro
+	 */
+	public Usuario buscarPorId(Integer id){
+		String sql = "SELECT * FROM usuario WHERE id = ?";
+
+		try (PreparedStatement preparador = con.prepareStatement(sql)){
+			preparador.setInt(1, id);
+			
+			ResultSet resultado = preparador.executeQuery();
+			if(resultado.next()){
+				Usuario usuario = new Usuario();
+				usuario.setId(resultado.getInt("id"));
+				usuario.setNome(resultado.getString("nome"));
+				usuario.setLogin(resultado.getString("login"));
+				usuario.setSenha(resultado.getString("senha"));
+				
+				return usuario;
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Realiza a busca de todos os registros dos usuários
+	 * @return Uma lista de objetos usuário
+	 */
+	public List<Usuario> buscarTodos(){
+		String sql = "SELECT * FROM usuario";
+		List<Usuario> lista = new ArrayList<>();
+		try (PreparedStatement preparador = con.prepareStatement(sql)){
+			
+			ResultSet resultado = preparador.executeQuery();
+			while(resultado.next()){
+				Usuario usuario = new Usuario();
+				usuario.setId(resultado.getInt("id"));
+				usuario.setNome(resultado.getString("nome"));
+				usuario.setLogin(resultado.getString("login"));
+				usuario.setSenha(resultado.getString("senha"));
+				lista.add(usuario);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return lista;
 	}
 	
 }
