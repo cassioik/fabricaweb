@@ -7,9 +7,20 @@ import br.com.fabricadeprogramador.persistencia.jdbc.UsuarioDAO;
 
 public class TestUsiarioDAO {
 	public static void main(String[] args) {
-		testBuscarTodos();
+		testAutenticar();
 	}
 	
+	private static void testAutenticar() {
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		Usuario usu = new Usuario();
+		usu.setLogin("cassio");
+		usu.setSenha("123");
+		
+		Usuario usuRetorno = usuarioDAO.autenticar(usu);
+		System.out.println(usuRetorno);
+		
+	}
+
 	private static void testBuscarPorId() {
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		Usuario usuario = usuarioDAO.buscarPorId(5);
